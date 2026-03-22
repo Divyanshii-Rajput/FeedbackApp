@@ -3,10 +3,11 @@ const bodyParser = require("body-parser");
 const path = require("path");
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 let feedbacks = [];
 
+// Middleware
 app.use(bodyParser.json());
 app.use(express.static("public"));
 
@@ -22,6 +23,7 @@ app.get("/api/feedback", (req, res) => {
   res.json(feedbacks);
 });
 
+// Start server (IMPORTANT FIX HERE)
 app.listen(PORT, "0.0.0.0", () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });

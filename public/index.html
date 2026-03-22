@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Feedback App</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .container {
+      background: white;
+      padding: 30px;
+      border-radius: 16px;
+      width: 90%;
+      max-width: 500px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+      outline: none;
+      transition: 0.3s;
+    }
+
+    input:focus, textarea:focus {
+      border-color: #667eea;
+      box-shadow: 0 0 5px rgba(102,126,234,0.5);
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      background: #667eea;
+      color: white;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background: #5a67d8;
+    }
+
+    .feedback-list {
+      margin-top: 20px;
+    }
+
+    .feedback-item {
+      background: #f5f7ff;
+      padding: 10px;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      transition: 0.2s;
+    }
+
+    .feedback-item:hover {
+      transform: scale(1.02);
+    }
+
+    .name {
+      font-weight: 600;
+      color: #333;
+    }
+
+    .message {
+      font-size: 14px;
+      color: #555;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+  <h2>💬 Feedback App</h2>
+
+  <input id="name" placeholder="Your Name">
+  <textarea id="message" placeholder="Your Feedback"></textarea>
+  <button onclick="submitFeedback()">Submit Feedback</button>
+
+  <div class="feedback-list" id="list"></div>
+</div>
+
+<script>
+async function submitFeedback() {
+  const name = document.getElementById("name").value;
+  const message = document.getElementById("message").value;
+
+  if (!name || !message) {
+    alert("Please fill all fields!");
+    return;
+  }
+
+  await fetch("/api/feedback", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ name, message })
+  });
+
+  document.getElementById("name").value = "";
+  document.getElementById("message").value = "";
+
+  loadFeedback();
+}
+
+async function loadFeedback() {
+  const res = await fetch("/api/feedback");
+  const data = await res.json();
+
+  const list = document.getElementById("list");
+  list.innerHTML = "";
+
+  data.reverse().forEach(f => {
+    const div = document.createElement("div");
+    div.className = "feedback-item";
+    div.innerHTML = `
+      <div class="name">${f.name}</div>
+      <div class="message">${f.message}</div>
+    `;
+    list.appendChild(div);
+  });
+}
+
+loadFeedback();
+</script>
+
+</body>
+</html>
